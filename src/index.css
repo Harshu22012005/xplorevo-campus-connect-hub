@@ -2,39 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Xplorevo Campus Connect Design System - Youth-oriented, vibrant colors */
 
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 0 0% 0%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Sky blue primary theme */
+    --primary: 199 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 199 100% 85%;
+    --primary-dark: 199 100% 35%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Soft secondary colors */
+    --secondary: 0 0% 98%;
+    --secondary-foreground: 0 0% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 199 100% 95%;
+    --accent-foreground: 199 100% 30%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 0 0% 90%;
+    --input: 0 0% 95%;
+    --ring: 199 100% 50%;
+
+    /* Custom Xplorevo colors */
+    --xplorevo-sky: 199 100% 50%;
+    --xplorevo-sky-light: 199 100% 85%;
+    --xplorevo-sky-dark: 199 100% 35%;
+    --xplorevo-gradient: linear-gradient(135deg, hsl(199 100% 50%), hsl(220 100% 60%));
+    --xplorevo-card-shadow: 0 8px 32px hsla(199, 100%, 50%, 0.1);
+    --xplorevo-soft-shadow: 0 4px 16px hsla(0, 0%, 0%, 0.1);
 
     --radius: 0.5rem;
 

@@ -1,0 +1,290 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2, Send, Users, MapPin, Instagram, GraduationCap } from "lucide-react";
+
+const indianStates = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat",
+  "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
+  "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+  "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh",
+  "Uttarakhand", "West Bengal", "Delhi", "Jammu and Kashmir", "Ladakh"
+];
+
+const popularColleges = [
+  "IIT Delhi", "IIT Bombay", "IIT Madras", "IIT Kanpur", "IIT Kharagpur", "IIT Roorkee",
+  "IIT Guwahati", "IIT Hyderabad", "NIT Trichy", "NIT Warangal", "NIT Surathkal",
+  "BITS Pilani", "BITS Goa", "BITS Hyderabad", "Delhi University", "JNU Delhi",
+  "Jamia Millia Islamia", "Anna University", "VIT Vellore", "Manipal University",
+  "SRM University", "Amity University", "Lovely Professional University", "Other"
+];
+
+interface FormData {
+  fullName: string;
+  collegeName: string;
+  customCollege: string;
+  collegeCity: string;
+  state: string;
+  instagramProfile: string;
+  interestedInLeading: string;
+}
+
+export function CampusConnectForm() {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    fullName: "",
+    collegeName: "",
+    customCollege: "",
+    collegeCity: "",
+    state: "",
+    instagramProfile: "",
+    interestedInLeading: ""
+  });
+
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Validate required fields
+      const requiredFields = ['fullName', 'collegeCity', 'state', 'interestedInLeading'];
+      const collegeName = formData.collegeName === 'Other' ? formData.customCollege : formData.collegeName;
+      
+      if (!collegeName) requiredFields.push('collegeName');
+
+      for (const field of requiredFields) {
+        if (!formData[field as keyof FormData]) {
+          toast({
+            title: "Missing Information",
+            description: `Please fill in your ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`,
+            variant: "destructive"
+          });
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // Prepare data for submission
+      const submissionData = {
+        ...formData,
+        collegeName: collegeName,
+        timestamp: new Date().toISOString(),
+        instagramProfile: formData.instagramProfile.startsWith('@') 
+          ? formData.instagramProfile 
+          : formData.instagramProfile ? `@${formData.instagramProfile}` : ''
+      };
+
+      // Here you would integrate with Google Sheets API or your backend
+      console.log("Form data to submit:", submissionData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      toast({
+        title: "🎉 Application Submitted!",
+        description: "Welcome to Xplorevo Campus Connect! We'll contact you soon.",
+      });
+
+      // Reset form
+      setFormData({
+        fullName: "",
+        collegeName: "",
+        customCollege: "",
+        collegeCity: "",
+        state: "",
+        instagramProfile: "",
+        interestedInLeading: ""
+      });
+
+    } catch (error) {
+      toast({
+        title: "Submission Failed",
+        description: "Please try again or contact support.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Card className="w-full max-w-lg mx-auto shadow-[var(--xplorevo-card-shadow)] border-primary/20">
+      <CardHeader className="text-center pb-6">
+        <CardTitle className="text-2xl font-bold text-primary flex items-center justify-center gap-2">
+          <Users className="h-6 w-6" />
+          Join Campus Connect
+        </CardTitle>
+        <CardDescription className="text-base">
+          Be part of India's fastest-growing youth travel community
+        </CardDescription>
+      </CardHeader>
+      
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Full Name */}
+          <div className="space-y-2">
+            <Label htmlFor="fullName" className="text-sm font-medium flex items-center gap-2">
+              <GraduationCap className="h-4 w-4" />
+              Full Name *
+            </Label>
+            <Input
+              id="fullName"
+              type="text"
+              placeholder="Enter your full name"
+              value={formData.fullName}
+              onChange={(e) => handleInputChange('fullName', e.target.value)}
+              className="rounded-xl border-primary/30 focus:ring-primary"
+            />
+          </div>
+
+          {/* College Name */}
+          <div className="space-y-2">
+            <Label htmlFor="collegeName" className="text-sm font-medium">
+              College Name *
+            </Label>
+            <Select 
+              value={formData.collegeName} 
+              onValueChange={(value) => handleInputChange('collegeName', value)}
+            >
+              <SelectTrigger className="rounded-xl border-primary/30">
+                <SelectValue placeholder="Select your college" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {popularColleges.map((college) => (
+                  <SelectItem key={college} value={college}>
+                    {college}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Custom College Input */}
+          {formData.collegeName === 'Other' && (
+            <div className="space-y-2">
+              <Label htmlFor="customCollege" className="text-sm font-medium">
+                College Name *
+              </Label>
+              <Input
+                id="customCollege"
+                type="text"
+                placeholder="Enter your college name"
+                value={formData.customCollege}
+                onChange={(e) => handleInputChange('customCollege', e.target.value)}
+                className="rounded-xl border-primary/30 focus:ring-primary"
+              />
+            </div>
+          )}
+
+          {/* College City */}
+          <div className="space-y-2">
+            <Label htmlFor="collegeCity" className="text-sm font-medium flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              College City *
+            </Label>
+            <Input
+              id="collegeCity"
+              type="text"
+              placeholder="Enter your college city"
+              value={formData.collegeCity}
+              onChange={(e) => handleInputChange('collegeCity', e.target.value)}
+              className="rounded-xl border-primary/30 focus:ring-primary"
+            />
+          </div>
+
+          {/* State */}
+          <div className="space-y-2">
+            <Label htmlFor="state" className="text-sm font-medium">
+              State *
+            </Label>
+            <Select 
+              value={formData.state} 
+              onValueChange={(value) => handleInputChange('state', value)}
+            >
+              <SelectTrigger className="rounded-xl border-primary/30">
+                <SelectValue placeholder="Select your state" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {indianStates.map((state) => (
+                  <SelectItem key={state} value={state}>
+                    {state}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Instagram Profile */}
+          <div className="space-y-2">
+            <Label htmlFor="instagram" className="text-sm font-medium flex items-center gap-2">
+              <Instagram className="h-4 w-4" />
+              Instagram Profile (Optional)
+            </Label>
+            <Input
+              id="instagram"
+              type="text"
+              placeholder="@yourusername or profile link"
+              value={formData.instagramProfile}
+              onChange={(e) => handleInputChange('instagramProfile', e.target.value)}
+              className="rounded-xl border-primary/30 focus:ring-primary"
+            />
+          </div>
+
+          {/* Interest in Leading */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">
+              Are you interested in leading Xplorevo activities? *
+            </Label>
+            <RadioGroup
+              value={formData.interestedInLeading}
+              onValueChange={(value) => handleInputChange('interestedInLeading', value)}
+              className="flex flex-col space-y-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="yes" id="yes" />
+                <Label htmlFor="yes" className="font-normal">Yes, I'm excited to lead!</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="maybe" id="maybe" />
+                <Label htmlFor="maybe" className="font-normal">Maybe, I'd like to learn more</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="no" id="no" />
+                <Label htmlFor="no" className="font-normal">No, I prefer to participate</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full rounded-xl bg-primary hover:bg-primary-dark text-primary-foreground font-semibold py-3 text-base transition-all duration-200 shadow-[var(--xplorevo-soft-shadow)]"
+          >
+            {isSubmitting ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Submitting...
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Send className="h-4 w-4" />
+                Join Campus Connect
+              </div>
+            )}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
