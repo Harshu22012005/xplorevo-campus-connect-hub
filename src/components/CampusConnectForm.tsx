@@ -4,8 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Send, Users, MapPin, Instagram, GraduationCap } from "lucide-react";
 
 const indianStates = [
@@ -32,6 +34,10 @@ interface FormData {
   state: string;
   instagramProfile: string;
   interestedInLeading: string;
+  whyJoinXplorevo: string;
+  isPartOfClub: string;
+  clubName: string;
+  roleInClub: string;
 }
 
 export function CampusConnectForm() {
@@ -44,7 +50,11 @@ export function CampusConnectForm() {
     collegeCity: "",
     state: "",
     instagramProfile: "",
-    interestedInLeading: ""
+    interestedInLeading: "",
+    whyJoinXplorevo: "",
+    isPartOfClub: "",
+    clubName: "",
+    roleInClub: ""
   });
 
   const handleInputChange = (field: keyof FormData, value: string) => {
@@ -57,7 +67,7 @@ export function CampusConnectForm() {
 
     try {
       // Validate required fields
-      const requiredFields = ['fullName', 'collegeCity', 'state', 'interestedInLeading'];
+      const requiredFields = ['fullName', 'collegeCity', 'state', 'interestedInLeading', 'whyJoinXplorevo', 'isPartOfClub'];
       const collegeName = formData.collegeName === 'Other' ? formData.customCollege : formData.collegeName;
       
       if (!collegeName) requiredFields.push('collegeName');
@@ -74,20 +84,37 @@ export function CampusConnectForm() {
         }
       }
 
-      // Prepare data for submission
+      // Additional validation for club fields
+      if (formData.isPartOfClub === 'yes' && (!formData.clubName || !formData.roleInClub)) {
+        toast({
+          title: "Please provide club details",
+          description: "Club name and role are required when you're part of a club",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Prepare data for Supabase
       const submissionData = {
-        ...formData,
-        collegeName: collegeName,
-        timestamp: new Date().toISOString(),
-        instagramProfile: formData.instagramProfile.startsWith('@') 
+        full_name: formData.fullName,
+        college_name: collegeName,
+        college_city: formData.collegeCity,
+        state: formData.state,
+        instagram_profile: formData.instagramProfile.startsWith('@') 
           ? formData.instagramProfile 
-          : formData.instagramProfile ? `@${formData.instagramProfile}` : ''
+          : formData.instagramProfile ? `@${formData.instagramProfile}` : '',
+        interested_in_leading: formData.interestedInLeading === 'yes',
+        why_join_xplorevo: formData.whyJoinXplorevo,
+        is_part_of_club: formData.isPartOfClub === 'yes',
+        club_name: formData.isPartOfClub === 'yes' ? formData.clubName : null,
+        role_in_club: formData.isPartOfClub === 'yes' ? formData.roleInClub : null,
       };
 
-      // Here you would integrate with Google Sheets API or your backend
-      console.log("Form data to submit:", submissionData);
+      // Store data to Supabase (currently simulated - will be enabled once types are regenerated)
+      console.log('Form submission data:', submissionData);
       
-      // Simulate API call
+      // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       toast({
@@ -103,10 +130,15 @@ export function CampusConnectForm() {
         collegeCity: "",
         state: "",
         instagramProfile: "",
-        interestedInLeading: ""
+        interestedInLeading: "",
+        whyJoinXplorevo: "",
+        isPartOfClub: "",
+        clubName: "",
+        roleInClub: ""
       });
 
     } catch (error) {
+      console.error('Submission error:', error);
       toast({
         title: "Submission Failed",
         description: "Please try again or contact support.",
@@ -264,6 +296,76 @@ export function CampusConnectForm() {
               </div>
             </RadioGroup>
           </div>
+
+          {/* Why Join Xplorevo */}
+          <div className="space-y-2">
+            <Label htmlFor="whyJoinXplorevo" className="text-sm font-medium">
+              6. Why do you want to be a part of Xplorevo Campus Connect? *
+            </Label>
+            <p className="text-xs text-muted-foreground mb-2">
+              Share in a few lines what excites you about joining this program.
+            </p>
+            <Textarea
+              id="whyJoinXplorevo"
+              placeholder="Tell us what excites you about joining Xplorevo Campus Connect..."
+              value={formData.whyJoinXplorevo}
+              onChange={(e) => handleInputChange('whyJoinXplorevo', e.target.value)}
+              className="min-h-[100px] rounded-xl border-primary/30 focus:ring-primary"
+            />
+          </div>
+
+          {/* Club Participation */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">
+              7. Are you currently part of any college club or activity group? *
+            </Label>
+            <RadioGroup
+              value={formData.isPartOfClub}
+              onValueChange={(value) => handleInputChange('isPartOfClub', value)}
+              className="flex flex-col space-y-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="yes" id="club-yes" />
+                <Label htmlFor="club-yes" className="font-normal">Yes</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="no" id="club-no" />
+                <Label htmlFor="club-no" className="font-normal">No</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          {/* Conditional Club Details */}
+          {formData.isPartOfClub === 'yes' && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="clubName" className="text-sm font-medium">
+                  Which club/group? *
+                </Label>
+                <Input
+                  id="clubName"
+                  type="text"
+                  placeholder="Enter club or group name"
+                  value={formData.clubName}
+                  onChange={(e) => handleInputChange('clubName', e.target.value)}
+                  className="rounded-xl border-primary/30 focus:ring-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="roleInClub" className="text-sm font-medium">
+                  Your role in the club? *
+                </Label>
+                <Input
+                  id="roleInClub"
+                  type="text"
+                  placeholder="e.g., Member, Secretary, President"
+                  value={formData.roleInClub}
+                  onChange={(e) => handleInputChange('roleInClub', e.target.value)}
+                  className="rounded-xl border-primary/30 focus:ring-primary"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Submit Button */}
           <Button

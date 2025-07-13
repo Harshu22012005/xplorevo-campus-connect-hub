@@ -48,11 +48,11 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <Phone className="h-4 w-4 text-primary" />
-                <span>+91 99999 88888</span>
+                <span>+91 9763262025</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <MapPin className="h-4 w-4 text-primary" />
-                <span>Mumbai, India</span>
+                <span>Pune, India</span>
               </div>
             </div>
           </div>
@@ -62,13 +62,13 @@ export function Footer() {
             <h3 className="font-semibold text-foreground">Follow Us</h3>
             <div className="space-y-3">
               <a 
-                href="https://instagram.com/xplorevo" 
+                href="https://www.instagram.com/xplorevo_universe?igsh=MWxsemNuNngwMDd4ag==" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-sm group"
               >
                 <Instagram className="h-4 w-4 text-primary group-hover:scale-110 transition-transform" />
-                <span>@xplorevo</span>
+                <span>@xplorevo_universe</span>
               </a>
               <p className="text-xs text-muted-foreground">
                 Follow us for daily travel inspiration and campus connect updates

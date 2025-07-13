@@ -32,7 +32,14 @@ export function Hero({ onScrollToForm }: HeroProps) {
             India's Fastest Growing Youth Travel Community
           </div>
 
-          {/* Main Title */}
+          {/* Logo and Main Title */}
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/xplorevo-logo.png" 
+              alt="Xplorevo Logo" 
+              className="h-16 md:h-20 lg:h-24 w-auto"
+            />
+          </div>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
             <span className="inline-flex items-center gap-3">
               <Rocket className="h-12 w-12 md:h-16 md:w-16 text-white" />

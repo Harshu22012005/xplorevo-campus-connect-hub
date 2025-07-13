@@ -68,25 +68,6 @@ export function InfoSection() {
           ))}
         </div>
 
-        {/* Stats Section */}
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-primary mb-2">500+</div>
-            <div className="text-muted-foreground">Colleges</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-primary mb-2">10K+</div>
-            <div className="text-muted-foreground">Students</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-primary mb-2">200+</div>
-            <div className="text-muted-foreground">Events</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold text-primary mb-2">50+</div>
-            <div className="text-muted-foreground">Cities</div>
-          </div>
-        </div>
       </div>
     </section>
   );
