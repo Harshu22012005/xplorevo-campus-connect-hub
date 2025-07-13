@@ -111,10 +111,10 @@ export function CampusConnectForm() {
         role_in_club: formData.isPartOfClub === 'yes' ? formData.roleInClub : null,
       };
 
-      // Store data (temporarily using console.log until Supabase types are updated)
+      // Store data (will connect to Supabase once migration is complete)
       console.log('📝 Form Submission Data:', submissionData);
       
-      // Simulate API call
+      // Simulate API delay  
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       toast({

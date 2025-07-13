@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { Download, Users, FileText, Calendar } from 'lucide-react';
+import { Download, Users, FileText, Calendar, LogOut, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Submission {
@@ -24,32 +25,41 @@ interface Submission {
 export default function AdminDashboard() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check if admin is logged in
+    const isLoggedIn = localStorage.getItem('admin-logged-in');
+    if (!isLoggedIn) {
+      navigate('/admin/login');
+      return;
+    }
+    
     fetchSubmissions();
-  }, []);
+    
+    // Real-time subscription (will activate once migration is complete)
+    // const channel = supabase
+    //   .channel('submissions-channel')
+    //   .on('postgres_changes', {
+    //     event: '*',
+    //     schema: 'public', 
+    //     table: 'campus_connect_submissions'
+    //   }, () => {
+    //     console.log('Real-time update detected');
+    //     fetchSubmissions();
+    //   })
+    //   .subscribe();
+
+    // return () => {
+    //   supabase.removeChannel(channel);
+    // };
+  }, [navigate]);
 
   const fetchSubmissions = async () => {
     try {
-      // For now, this will use mock data until the table is created
-      const mockSubmissions: Submission[] = [
-        {
-          id: '1',
-          full_name: 'John Doe',
-          college_name: 'IIT Delhi',
-          college_city: 'New Delhi',
-          state: 'Delhi',
-          instagram_profile: '@johndoe',
-          interested_in_leading: true,
-          why_join_xplorevo: 'I love traveling and want to connect with like-minded people.',
-          is_part_of_club: true,
-          club_name: 'Photography Club',
-          role_in_club: 'President',
-          created_at: new Date().toISOString(),
-        }
-      ];
-      
+      // Will connect to real data once Supabase migration is complete
+      const mockSubmissions: Submission[] = [];
       setSubmissions(mockSubmissions);
       setLoading(false);
     } catch (error) {
@@ -61,6 +71,15 @@ export default function AdminDashboard() {
       });
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('admin-logged-in');
+    navigate('/admin/login');
+    toast({
+      title: "Logged out",
+      description: "You have been logged out successfully",
+    });
   };
 
   const downloadCSV = () => {
@@ -120,13 +139,25 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="container mx-auto max-w-7xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Xplorevo Campus Connect - Admin Dashboard
-          </h1>
-          <p className="text-muted-foreground">
-            Manage and export student applications
-          </p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Xplorevo Campus Connect - Admin Dashboard
+            </h1>
+            <p className="text-muted-foreground">
+              Manage and export student applications
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={fetchSubmissions}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+            <Button variant="destructive" onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -167,7 +198,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Export Button */}
-        <div className="mb-6">
+        <div className="mb-6 flex gap-2">
           <Button onClick={downloadCSV} className="flex items-center gap-2">
             <Download className="h-4 w-4" />
             Download CSV Export

@@ -77,7 +77,6 @@ export function Hero({ onScrollToForm }: HeroProps) {
 
           {/* Social Proof */}
           <div className="mt-12 text-white/70">
-            <p className="text-sm mb-2">Join 10,000+ students already part of the community</p>
             <div className="flex justify-center gap-8 text-xs">
               <span>✅ Free to Join</span>
               <span>✅ Exclusive Events</span>
