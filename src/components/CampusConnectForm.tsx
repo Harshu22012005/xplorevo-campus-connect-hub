@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Send, Users, MapPin, Instagram, GraduationCap } from "lucide-react";
+import { Loader2, Send, Users, MapPin, Instagram, GraduationCap, Phone, Mail } from "lucide-react";
 
 const indianStates = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat",
@@ -28,6 +28,8 @@ const popularColleges = [
 
 interface FormData {
   fullName: string;
+  mobileNumber: string;
+  email: string;
   collegeName: string;
   customCollege: string;
   collegeCity: string;
@@ -45,6 +47,8 @@ export function CampusConnectForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
+    mobileNumber: "",
+    email: "",
     collegeName: "",
     customCollege: "",
     collegeCity: "",
@@ -67,10 +71,34 @@ export function CampusConnectForm() {
 
     try {
       // Validate required fields
-      const requiredFields = ['fullName', 'collegeCity', 'state', 'interestedInLeading', 'whyJoinXplorevo', 'isPartOfClub'];
+      const requiredFields = ['fullName', 'mobileNumber', 'email', 'collegeCity', 'state', 'interestedInLeading', 'whyJoinXplorevo', 'isPartOfClub'];
       const collegeName = formData.collegeName === 'Other' ? formData.customCollege : formData.collegeName;
       
       if (!collegeName) requiredFields.push('collegeName');
+
+      // Email validation
+      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+      if (formData.email && !emailRegex.test(formData.email)) {
+        toast({
+          title: "Invalid Email",
+          description: "Please enter a valid email address",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Mobile number validation (Indian format)
+      const mobileRegex = /^[6-9][0-9]{9}$/;
+      if (formData.mobileNumber && !mobileRegex.test(formData.mobileNumber)) {
+        toast({
+          title: "Invalid Mobile Number",
+          description: "Please enter a valid 10-digit Indian mobile number",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
+      }
 
       for (const field of requiredFields) {
         if (!formData[field as keyof FormData]) {
@@ -98,6 +126,8 @@ export function CampusConnectForm() {
       // Prepare data for Supabase
       const submissionData = {
         full_name: formData.fullName,
+        mobile_number: formData.mobileNumber,
+        email: formData.email,
         college_name: collegeName,
         college_city: formData.collegeCity,
         state: formData.state,
@@ -132,6 +162,8 @@ export function CampusConnectForm() {
       // Reset form
       setFormData({
         fullName: "",
+        mobileNumber: "",
+        email: "",
         collegeName: "",
         customCollege: "",
         collegeCity: "",
@@ -182,6 +214,39 @@ export function CampusConnectForm() {
               placeholder="Enter your full name"
               value={formData.fullName}
               onChange={(e) => handleInputChange('fullName', e.target.value)}
+              className="rounded-xl border-primary/30 focus:ring-primary"
+            />
+          </div>
+
+          {/* Mobile Number */}
+          <div className="space-y-2">
+            <Label htmlFor="mobileNumber" className="text-sm font-medium flex items-center gap-2">
+              <Phone className="h-4 w-4" />
+              Mobile Number *
+            </Label>
+            <Input
+              id="mobileNumber"
+              type="tel"
+              placeholder="Enter 10-digit mobile number"
+              value={formData.mobileNumber}
+              onChange={(e) => handleInputChange('mobileNumber', e.target.value)}
+              className="rounded-xl border-primary/30 focus:ring-primary"
+              maxLength={10}
+            />
+          </div>
+
+          {/* Email Address */}
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Email Address *
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter your email address"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
               className="rounded-xl border-primary/30 focus:ring-primary"
             />
           </div>

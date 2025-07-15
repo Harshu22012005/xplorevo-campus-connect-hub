@@ -20,11 +20,13 @@ export type Database = {
           college_city: string
           college_name: string
           created_at: string
+          email: string | null
           full_name: string
           id: string
           instagram_profile: string | null
           interested_in_leading: boolean
           is_part_of_club: boolean
+          mobile_number: string | null
           role_in_club: string | null
           state: string
           submitted_at: string
@@ -36,11 +38,13 @@ export type Database = {
           college_city: string
           college_name: string
           created_at?: string
+          email?: string | null
           full_name: string
           id?: string
           instagram_profile?: string | null
           interested_in_leading?: boolean
           is_part_of_club?: boolean
+          mobile_number?: string | null
           role_in_club?: string | null
           state: string
           submitted_at?: string
@@ -52,11 +56,13 @@ export type Database = {
           college_city?: string
           college_name?: string
           created_at?: string
+          email?: string | null
           full_name?: string
           id?: string
           instagram_profile?: string | null
           interested_in_leading?: boolean
           is_part_of_club?: boolean
+          mobile_number?: string | null
           role_in_club?: string | null
           state?: string
           submitted_at?: string
