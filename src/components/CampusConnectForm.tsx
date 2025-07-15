@@ -111,11 +111,18 @@ export function CampusConnectForm() {
         role_in_club: formData.isPartOfClub === 'yes' ? formData.roleInClub : null,
       };
 
-      // Store data (will connect to Supabase once migration is complete)
-      console.log('📝 Form Submission Data:', submissionData);
-      
-      // Simulate API delay  
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Store data in Supabase
+      const { data, error } = await supabase
+        .from('campus_connect_submissions')
+        .insert([submissionData])
+        .select();
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error('Failed to submit application');
+      }
+
+      console.log('✅ Successfully submitted to Supabase:', data);
 
       toast({
         title: "🎉 Application Submitted!",

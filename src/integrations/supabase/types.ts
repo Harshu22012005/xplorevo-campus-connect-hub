@@ -14,7 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      campus_connect_submissions: {
+        Row: {
+          club_name: string | null
+          college_city: string
+          college_name: string
+          created_at: string
+          full_name: string
+          id: string
+          instagram_profile: string | null
+          interested_in_leading: boolean
+          is_part_of_club: boolean
+          role_in_club: string | null
+          state: string
+          submitted_at: string
+          updated_at: string
+          why_join_xplorevo: string
+        }
+        Insert: {
+          club_name?: string | null
+          college_city: string
+          college_name: string
+          created_at?: string
+          full_name: string
+          id?: string
+          instagram_profile?: string | null
+          interested_in_leading?: boolean
+          is_part_of_club?: boolean
+          role_in_club?: string | null
+          state: string
+          submitted_at?: string
+          updated_at?: string
+          why_join_xplorevo: string
+        }
+        Update: {
+          club_name?: string | null
+          college_city?: string
+          college_name?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          instagram_profile?: string | null
+          interested_in_leading?: boolean
+          is_part_of_club?: boolean
+          role_in_club?: string | null
+          state?: string
+          submitted_at?: string
+          updated_at?: string
+          why_join_xplorevo?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

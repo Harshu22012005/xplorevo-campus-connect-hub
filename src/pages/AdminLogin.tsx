@@ -90,11 +90,6 @@ export default function AdminLogin() {
             </Button>
           </form>
           
-          <div className="mt-6 p-4 bg-muted rounded-lg">
-            <h4 className="font-semibold text-sm mb-2">Demo Credentials:</h4>
-            <p className="text-xs text-muted-foreground">Username: <code>admin</code></p>
-            <p className="text-xs text-muted-foreground">Password: <code>xplorevo2024</code></p>
-          </div>
         </CardContent>
       </Card>
     </div>

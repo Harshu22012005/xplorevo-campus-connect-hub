@@ -13,13 +13,13 @@ interface Submission {
   college_name: string;
   college_city: string;
   state: string;
-  instagram_profile: string;
+  instagram_profile: string | null;
   interested_in_leading: boolean;
   why_join_xplorevo: string;
   is_part_of_club: boolean;
   club_name: string | null;
   role_in_club: string | null;
-  created_at: string;
+  submitted_at: string;
 }
 
 export default function AdminDashboard() {
@@ -38,29 +38,41 @@ export default function AdminDashboard() {
     
     fetchSubmissions();
     
-    // Real-time subscription (will activate once migration is complete)
-    // const channel = supabase
-    //   .channel('submissions-channel')
-    //   .on('postgres_changes', {
-    //     event: '*',
-    //     schema: 'public', 
-    //     table: 'campus_connect_submissions'
-    //   }, () => {
-    //     console.log('Real-time update detected');
-    //     fetchSubmissions();
-    //   })
-    //   .subscribe();
+    // Real-time subscription for new submissions
+    const channel = supabase
+      .channel('submissions-channel')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public', 
+        table: 'campus_connect_submissions'
+      }, (payload) => {
+        console.log('New submission received:', payload);
+        setSubmissions(prev => [payload.new as Submission, ...prev]);
+        toast({
+          title: "New Submission!",
+          description: `${payload.new.full_name} just applied`,
+        });
+      })
+      .subscribe();
 
-    // return () => {
-    //   supabase.removeChannel(channel);
-    // };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [navigate]);
 
   const fetchSubmissions = async () => {
     try {
-      // Will connect to real data once Supabase migration is complete
-      const mockSubmissions: Submission[] = [];
-      setSubmissions(mockSubmissions);
+      const { data, error } = await supabase
+        .from('campus_connect_submissions')
+        .select('*')
+        .order('submitted_at', { ascending: false });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      setSubmissions(data || []);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching submissions:', error);
@@ -110,7 +122,7 @@ export default function AdminDashboard() {
         sub.is_part_of_club ? 'Yes' : 'No',
         `"${sub.club_name || ''}"`,
         `"${sub.role_in_club || ''}"`,
-        `"${new Date(sub.created_at).toLocaleString()}"`
+        `"${new Date(sub.submitted_at).toLocaleString()}"`
       ].join(','))
     ].join('\n');
 
@@ -251,7 +263,7 @@ export default function AdminDashboard() {
                     Instagram: {submission.instagram_profile || 'Not provided'}
                   </span>
                   <span>
-                    Submitted: {new Date(submission.created_at).toLocaleDateString()}
+                    Submitted: {new Date(submission.submitted_at).toLocaleDateString()}
                   </span>
                 </div>
               </CardContent>
