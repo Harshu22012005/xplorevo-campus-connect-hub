@@ -10,6 +10,8 @@ import { useToast } from '@/hooks/use-toast';
 interface Submission {
   id: string;
   full_name: string;
+  mobile_number: string | null;
+  email: string | null;
   college_name: string;
   college_city: string;
   state: string;
@@ -97,6 +99,8 @@ export default function AdminDashboard() {
   const downloadCSV = () => {
     const headers = [
       'Name',
+      'Mobile Number',
+      'Email',
       'College',
       'City',
       'State',
@@ -113,6 +117,8 @@ export default function AdminDashboard() {
       headers.join(','),
       ...submissions.map(sub => [
         `"${sub.full_name}"`,
+        `"${sub.mobile_number || ''}"`,
+        `"${sub.email || ''}"`,
         `"${sub.college_name}"`,
         `"${sub.college_city}"`,
         `"${sub.state}"`,
@@ -240,6 +246,22 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
+                {/* Contact Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 bg-muted/50 rounded-lg">
+                  <div>
+                    <h4 className="font-medium text-sm text-muted-foreground mb-1">
+                      Mobile Number:
+                    </h4>
+                    <p className="text-sm font-mono">{submission.mobile_number || 'Not provided'}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-sm text-muted-foreground mb-1">
+                      Email:
+                    </h4>
+                    <p className="text-sm font-mono">{submission.email || 'Not provided'}</p>
+                  </div>
+                </div>
+
                 <div>
                   <h4 className="font-medium text-sm text-muted-foreground mb-1">
                     Why Join Xplorevo:
